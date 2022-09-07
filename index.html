@@ -31,7 +31,23 @@
 <!-- leaflet js  -->
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script>
-    // Map initialization 
+    let lat1 = 12.843813126304015
+    let lat2 = 12.844581659878063
+    let lat3 = 12.844575043926554
+    let lat4 = 12.853085972027726
+    let lat5 = 12.871728277298482
+    let long1 = 80.15275439233858
+    let long2 = 80.15011847026041
+    let long3 = 80.14979774507235
+    let long4 = 80.13842963033225
+    let long5 = 80.10187477992596
+    var locations = [
+      [lat1,long1],
+      [lat2,long2],
+      [lat3,long3],
+      [lat4,long4],
+      [lat5,long5]
+    ]
     var map = L.map('map').setView([14.0860746, 100.608406], 6);
 
     //osm layer
@@ -40,57 +56,46 @@
     });
     osm.addTo(map);
 
-    if(!navigator.geolocation) {
-        console.log("Your browser doesn't support geolocation feature!")
-    } else {
-        setInterval(() => {
-            navigator.geolocation.getCurrentPosition(getPosition)
-        }, 5000);
+  var marker, circle;
+
+function getPosition(position){
+    // console.log(position)
+    var lat = position.coords.latitude
+    var long = position.coords.longitude
+    var accuracy = position.coords.accuracy
+
+    if(marker) {
+        map.removeLayer(marker)
     }
 
-    var marker, circle;
-
-    function getPosition(position){
-        // console.log(position)
-        var lat = position.coords.latitude
-        var long = position.coords.longitude
-        var accuracy = position.coords.accuracy
-
-        if(marker) {
-            map.removeLayer(marker)
-        }
-
-        if(circle) {
-            map.removeLayer(circle)
-        }
-
-        marker = L.marker([lat, long])
-        circle = L.circle([lat, long], {radius: accuracy})
-
-        var featureGroup = L.featureGroup([marker, circle]).addTo(map)
-
-        map.fitBounds(featureGroup.getBounds())
-
-        console.log("Your coordinate is: Lat: "+ lat +" Long: "+ long+ " Accuracy: "+ accuracy)
-        
-        
+    if(circle) {
+        map.removeLayer(circle)
     }
-    function connectDots(data) {
-    var features = data.features,
-        feature,
-        c = [],
-        i;
 
-    for (i = 0; i < features.length; i += 1) {
-        feature = features[i];
-        // Make sure this feature is a point.
-        if (feature.geometry === "Point") {
-            c.push(feature.geometry.coordinates);
-        }
-    }
-    return c;
-}
+    marker = L.marker([lat, long])
+    circle = L.circle([lat, long], {radius: accuracy})
 
-L.polyline(connectDots(data)).addTo(map);
+    var featureGroup = L.featureGroup([marker, circle]).addTo(map)
 
-</script>
+    map.fitBounds(featureGroup.getBounds())
+
+    console.log("Your coordinate is: Lat: "+ lat +" Long: "+ long+ " Accuracy: "+ accuracy)
+  }
+    var map = L.map('map').setView([lat1,long1],12);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+var polyline = new L.Polyline(locations, {
+        color: 'red',
+        weight: 5,
+        smoothFactor: 1
+    }).addTo(map);
+  L.marker([lat1,long1]).addTo(map)
+  L.marker([lat2,long2]).addTo(map)
+  L.marker([lat3,long3]).addTo(map)
+  L.marker([lat4,long4]).addTo(map)
+  L.marker([lat5,long5]).addTo(map)
+  polyline.spliceLatLng(lat1,lat2,lat3,lat4)
+  
+
+  </script>
