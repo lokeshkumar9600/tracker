@@ -73,7 +73,30 @@
 
         console.log("Your coordinate is: Lat: "+ lat +" Long: "+ long+ " Accuracy: "+ accuracy)
         api.getRoute(routingLink).then(res =>{
-    const routeLayer = L.geoJSON(res.data.features,{}).addTo(layerGroup) //shows route on the map 
+ 
+ var geojsonMarkerOptions = {//Options for circleMarker
+     radius: 5,
+     fillColor: "#ffffff",
+     color: "#000",
+     weight: 1,
+     opacity: 1,
+     fillOpacity: 0.8
+  }
+
+  const routeLayer = L.geoJSON(res.data.features,{
+     onEachFeature(feature,layer){//the data from each feature in my situation it was a single feature, i used a route between only two places.
+       const featureCoords = feature.geometry.coordinates[0]
+       for(let step of feature.properties.legs[0].steps){//iterate throw all Steps 
+          if(step.instruction){//if the step has instruction attribute, add a circleMarker
+             let instructionPoint = L.circleMarker([featureCoords[step.from_index][1],featureCoords[step.from_index][0]], geojsonMarkerOptions).addTo(layerGroup)
+             instructionPoint.addEventListener("click",e =>{// add eventListener that show a popup with the instraction.
+               L.popup().setLatLng([featureCoords[step.from_index][1],featureCoords[step.from_index][0]]).setContent(step.instruction.text).addTo(layerGroup)
+             })
+                          
+          }
+       }
+     },
+  }).addTo(layerGroup) //add the route to the layerGroup   
 })
         
     }
