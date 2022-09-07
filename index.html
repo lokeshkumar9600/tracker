@@ -24,6 +24,7 @@
 
 <body>
     <div id="map"></div>
+    print("Your coordinate is: Lat: "+ lat +" Long: "+ long)
 </body>
 </html>
 
@@ -71,6 +72,10 @@
         map.fitBounds(featureGroup.getBounds())
 
         console.log("Your coordinate is: Lat: "+ lat +" Long: "+ long+ " Accuracy: "+ accuracy)
+        api.getRoute(routingLink).then(res =>{
+    const routeLayer = L.geoJSON(res.data.features,{}).addTo(layerGroup) //shows route on the map 
+})
+        
     }
 
 </script>
